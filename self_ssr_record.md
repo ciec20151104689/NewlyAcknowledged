@@ -1,6 +1,7 @@
-# 使用一键脚本安装ssr服务端，脚本：
+# SSR+BBR成功运行步骤(CentOS 7.x)
+## 使用一键脚本安装ssr服务端，脚本：
 
-## yum -y install wget
+yum -y install wget
 
 wget -N --no-check-certificate https://raw.githubusercontent.com/ToyoDAdoubi/doubi/master/ssr.sh && chmod +x ssr.sh && bash ssr.sh
 
