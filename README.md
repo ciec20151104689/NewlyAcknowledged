@@ -12,14 +12,16 @@ This command should output a string which resembles:
 3.10.0-514.2.2.el7.x86_64
 As you see, the current kernel is 3.10.0.
 
-Install the ELRepo repo:
+### Install the ELRepo repo:
 
 sudo rpm --import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org
 sudo rpm -Uvh http://www.elrepo.org/elrepo-release-7.0-2.el7.elrepo.noarch.rpm
-Install the 4.9.0 kernel using the ELRepo repo:
+
+### Install the 4.9.0 kernel using the ELRepo repo:
 
 sudo yum --enablerepo=elrepo-kernel install kernel-ml -y
-Confirm the result:
+
+### Confirm the result:
 
 rpm -qa | grep kernel
 If the installation is successful, you should see kernel-ml-4.9.0-1.el7.elrepo.x86_64 among the output list:
@@ -31,7 +33,7 @@ kernel-tools-3.10.0-514.2.2.el7.x86_64
 kernel-3.10.0-514.2.2.el7.x86_64
 Now, you need to enable the 4.9.0 kernel by setting up the default grub2 boot entry.
 
-Show all entries in the grub2 menu:
+### Show all entries in the grub2 menu:
 
 sudo egrep ^menuentry /etc/grub2.cfg | cut -f 2 -d \'
 The result should resemble:
@@ -149,7 +151,33 @@ sudo reboot
 
 ## 开启 BBR
  
+### 为了启用BBR算法，您需要修改sysctl配置，如下所示：
 
+echo 'net.core.default_qdisc=fq' | sudo tee -a /etc/sysctl.conf
+echo 'net.ipv4.tcp_congestion_control=bbr' | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+### 现在，您可以使用以下命令确认已启用BBR：
+
+sudo sysctl net.ipv4.tcp_available_congestion_control
+
+### 输出应该类似：
+
+net.ipv4.tcp_available_congestion_control = bbr cubic reno
+### 然后：
+sudo sysctl -n net.ipv4.tcp_congestion_control
+### 输出应该类似：
+
+bbr
+
+最后，检查内核模块是否已加载：
+
+lsmod | grep bbr
+
+### 输出应该类似：
+
+tcp_bbr                16384  0
+## 开启对应端口的 网络通讯
 ## 或 直接使用一步安装脚本
 
 sudo wget --no-check-certificate https://github.com/teddysun/across/raw/master/bbr.sh && chmod +x bbr.sh && ./bbr.sh
